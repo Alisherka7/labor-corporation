@@ -1,0 +1,141 @@
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+</head>
+
+<body>
+    <div id='app'>
+        <input id='title' placeholder="TEST FIELD" v-model="title">
+        <input id='body' placeholder="TEST FIELD" v-model="body">
+        <input id='files' type="file" multiple placeholder="TEST FIELD" @change="fileChange">
+        <button id='button' @click="onClick">START TEST</button>
+    </div>
+</body>
+<script>
+
+    function FileDownload(filePath) {
+        var a = document.createElement('A');
+        a.href = filePath;
+        a.download = filePath.substr(filePath.lastIndexOf('/') + 1);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+    setTimeout(() => {
+        
+        // var tdata = {
+        //     type: 'user',
+        //     name: 'login',
+        //     bag: {
+        //         '아이디': 'admin',
+        //         '비밀번호': 'sana',
+        //     }
+        // }
+        // $.post('./ajax.php', tdata, res => {
+        //     res = JSON.parse(res);
+        //     console.log(res);
+        // });
+
+        tdata = {
+            type: 'receipt',
+            name: 'state_cancel',
+            bag: {
+                index: 0,
+            }
+        }
+        $.post('./ajax.php', tdata, res => {
+            res = JSON.parse(res);
+            console.log(res);
+        });
+
+
+        // $('#button').click();
+    }, 100);
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                title: "",
+                body: "",
+                formData: "",
+            }
+        },
+        mounted() {
+            this.formData = new FormData();
+        },
+        methods: {
+            fileChange(e) {
+                this.formData.append('사무위탁서파일첨부#1', e.target.files[0]);
+                this.formData.append('사무위탁서파일첨부#2', e.target.files[1]);
+                this.formData.append('사업자등록증파일첨부#1', e.target.files[2]);
+            },
+            onClick() {
+                let data = {}
+
+                // data = {
+                //     type: 'receipt',
+                //     name: 'state_refuse',
+                //     bag: {
+                //         index: 10,
+                //     }
+                // }
+                // $.post('./ajax.php', data, res => {
+                //     console.log(JSON.parse(res));
+                //     data = {
+                //         type: 'receipt',
+                //         name: 'get',
+                //         bag: {
+                //             indexs: [10]
+                //         }
+                //     }
+
+                //     $.post('./ajax.php', data, res => {
+                //         console.log(JSON.parse(res));
+                //     })
+                // })
+
+                // return;
+                let xhr;
+
+                $.ajax({
+                    url: './ajax.php', // url where upload the image
+                    contentType: 'multipart/form-data',
+                    type: 'POST',
+                    data: this.formData,
+                    dataType: 'json',
+                    mimeType: 'multipart/form-data',
+                    success: (res) => {
+                        console.log(res);
+                        data = {
+                            'type': 'receipt',
+                            'name': 'add',
+                            bag: {
+                                'receipt_name': '사업장위탁신고',
+                                'data': {
+                                    '사무위탁서파일첨부': [res.result['사무위탁서파일첨부#1'], res.result['사무위탁서파일첨부#2']],
+                                    '사업자등록증파일첨부': [res.result['사업자등록증파일첨부#1']],
+                                    '두루누리지원금여부': '아니1요',
+                                },
+                                'file_fields': ['사무위탁서파일첨부', '사업자등록증파일첨부'],
+                            }
+
+                            // '테스트필드': '오케이',
+                            // '서식파일': [res.result['서식파일#1']]
+                        }
+                        $.post('./ajax.php', data, res => {
+                            console.log(JSON.parse(res));
+
+                        })
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert('ERRORS: ' + textStatus);
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+
+            }
+        }
+    });
+</script>
