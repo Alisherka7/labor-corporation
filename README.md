@@ -42,6 +42,17 @@
 
 1. 백엔드 코드를 호스팅하는 폴더(`public_html`) 의 `server` 폴더에 넣어야합니다.
 
+1. DB 가 필요합니다. `server/settings.json` 파일을 생성하고, 아래처럼 정보를 입력하세요.
+
+    ```json
+    {
+        "db_host": "localhost",
+        "db_id": "root",
+        "db_password": "1234",
+        "db_name": "labor"
+    }
+    ```
+
 #### 프론트 서버 실행 및 빌드 방법
 
 1. `cd front` 명령어로 콘솔에서 front 폴더로 들어갑니다.
